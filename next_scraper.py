@@ -1,0 +1,57 @@
+import requests
+from bs4 import BeautifulSoup
+
+url = 'https://www.groupon.com/browse/salt-lake-city?lat=40.115&lng=-111.655&query=escape+room&address=Spanish+Fork%2C+UT&division=salt-lake-city&locale=en_US'
+HEADERS = {
+   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537/6',
+   'Accept-Encoding': 'gzip, deflate, br',
+   'Accept-Language': 'en-US,en;q=0.9',
+   'origin': url,
+   'referer': url
+}
+
+page = requests.get(url, headers=HEADERS)
+
+soup = BeautifulSoup(page.content, 'html.parser')
+
+deals = soup.find_all('div', class_='cui-content')
+
+print(f'{"title":<35}{"location":<35}{"rating":<10}{"og_price":<15}{"discount_price":<15}{"description"}')
+print(f'{"-"*34:<35}{"-"*34:<35}{"-"*9:<10}{"-"*14:<15}{"-"*14:<15}{"-"*40}')
+
+for deal in deals:
+    title = deal.find('div', class_='cui-udc-title')
+    if title:
+       title = title.text.strip()
+    location = deal.find('span', class_='cui-location-name')
+    if location:
+        location = location.text.strip()
+    rating = deal.find('div', class_='numeric-count')
+    if rating: 
+        rating = rating.text.strip()
+    og_price = deal.find('div', class_='cui-price-original')
+    if og_price:
+        og_price = og_price.text.strip()
+    discount_price = deal.find('div', class_='cui-price-discount')
+    if discount_price:
+        discount_price = discount_price.text.strip()
+    description = deal.find('div', class_='cui-udc-subtitle')
+    if description:
+        description = description.text.strip()
+    
+    if title == None:
+        title = 'no info'
+    if location == None:
+        location = 'no info'
+    if rating == None:
+        rating = 'no info'
+    if og_price == None:
+        og_price = 'no info'
+    if discount_price == None:
+        discount_price = 'no info'
+    if description == None:
+        description = 'no info'
+    
+
+    print(f'{title:<35}{location:<35}{rating:<10}{og_price:<15}{discount_price:<15}{description}')
+  
